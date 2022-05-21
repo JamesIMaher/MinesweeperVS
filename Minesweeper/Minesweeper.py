@@ -1,5 +1,7 @@
+from itertools import filterfalse
 import sys
 import random
+import pygame
 
 class Board:
 
@@ -34,4 +36,21 @@ class Board:
             randY = random.randint(0,(self.board_height-1))
             self.board_array[randX][randY] = -1
 
+pygame.init()
 game_board = Board()
+screen = pygame.display.set_mode([500,500])
+
+running = True
+while running:
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    screen.fill((255, 255, 255))
+
+    pygame.draw.circle(screen, (0,0,255), (250, 250), 75)
+
+    pygame.display.flip()
+
+pygame.quit()
