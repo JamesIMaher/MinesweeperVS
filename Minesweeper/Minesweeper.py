@@ -6,13 +6,13 @@ import pygame
 
 class Board:
 
-    board_width = 9
-    board_height = 9
-    numBombs = 10
 
-    def __init__ (self):
+    def __init__ (self, width, height, numMines):
+        self.board_width = width
+        self.board_height = height
+        self.numMines = numMines
         self.board_array = self.createBoard(self.board_width, self.board_height)
-        #self.printBoardText(self.board_height, self.board_height)
+        #self.printBoardText(self.board_height, self.board_height) #print the board with all zeros
         self.placeBombs()
         self.determineCounts(self.board_width, self.board_height)
         self.printBoardText(self.board_height, self.board_height)
@@ -27,16 +27,16 @@ class Board:
         return board_array
 
     def printBoardText (self, width, height):
-        for x in range(width):
+        for x in range(height):
             #for y in range (height): 
             print(*self.board_array[x], sep="\t", end="\n")
             #print()
 
     def placeBombs (self):
-        for bomb in range(self.numBombs):
+        for bomb in range(self.numMines):
             randX = random.randint(0,(self.board_width-1))
             randY = random.randint(0,(self.board_height-1))
-            self.board_array[randX][randY] = -1
+            self.board_array[randY][randX] = -1
 
     def determineCounts (self, width, height):
         #Determine how many bombs are surrounding each square
@@ -76,6 +76,22 @@ class Board:
             else:
                 return False #No bomb
 
+    def returnBoardNumber (self, yPos, xPos):
+        return self.board_array[yPos][xPos]
+
+class UserInteraction:
+
+    def __init__ (self):
+        userInput = input("Welcome to Minesweeper. Would you like a small, medium, or large board?\n")
+        if userInput == "small":
+            self.game_board = Board(9,9,10)
+        elif userInput == "medium":
+            self.game_board = Board(16,16,40)
+        elif userInput == "large":
+            self.game_board = Board(30,16,99)
+        else:
+            print("error")
+
 
 class Screen:
 
@@ -103,7 +119,8 @@ class Cell (pygame.sprite.Sprite):
 
 
 #pygame.init()
-game_board = Board()
+user_input = UserInteraction()
+#game_board = Board()
 #screen = Screen(500, 500)
 #cell = Cell()
 
