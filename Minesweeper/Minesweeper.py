@@ -14,7 +14,7 @@ class GameCell:
         self.yPos = yPos
         self.bombPresent = False
         self.numSurroundingMines = 0
-        self.visible = True
+        self.visible = False
 
     def setMine (self):
         self.bombPresent = True
@@ -33,12 +33,18 @@ class Board:
         self.board_height = height
         self.numMines = numMines
         self.board_array = []
+        self.gameOver = False
+
         self.createBoard(self.board_width, self.board_height)
         #Initial Board Setup
         self.placeBombs()
         self.determineCounts(self.board_width, self.board_height)
-        #Test print of the board
+        #Test print of the board (diagnostic)
         self.printBoardText(self.board_height, self.board_height) #print the board with all zeros
+        #Print the user view of the board
+        print()
+        print()
+        self.printUserBoardText()
 
 
     # Function to create the back-end array that will hold whether there is a bomb or not at each square.
@@ -55,32 +61,43 @@ class Board:
                 new_row.append(new_cell)
             self.board_array.append(new_row)
 
+    #Prints the solution to the minesweeper board
     def printBoardText (self, width, height):
         for y in range(height):
             for x in range (width):
                #check if this cell should be shown to the user
-                if self.board_array[x][y].visible ==True:
-                    if self.board_array[x][y].bombPresent == True:
-                        print("-1\t", end='')
-                    else:
-                        #print(self.board_array[y][x].numSurroundingMines + "\t")
-                        print(self.board_array[x][y].numSurroundingMines, end='')
-                        print("\t", end='')
+                #if self.board_array[x][y].visible ==True:
+                if self.board_array[y][x].bombPresent == True:
+                    print("-1\t", end='')
+                else:
+                    #print(self.board_array[y][x].numSurroundingMines + "\t")
+                    print(self.board_array[y][x].numSurroundingMines, end='')
+                    print("\t", end='')
             print("\n")
                 #print(*self.board_array[y][x], sep="\t", end="\n")
 
+    #Prints the user view of the minesweeper board
+    def printUserBoardText (self):
+        for y in range (self.board_height):
+            for x in range (self.board_width):
+                if self.board_array[y][x].visible == True:
+                    print (self.board_array[y][x].numSurroundingMines, end='')
+                    print("\t", end='')
+                else:
+                    print ("X\t", end='')
+            print()
 
     def placeBombs (self):
         for bomb in range(self.numMines):
             randX = random.randint(0,(self.board_width-1))
             randY = random.randint(0,(self.board_height-1))
-            self.board_array[randX][randY].setMine()
+            self.board_array[randY][randX].setMine()
 
     def determineCounts (self, width, height):
         #Determine how many bombs are surrounding each square
-        for x in range(width):
-            for y in range(height):
-                if self.board_array[x][y].bombPresent == False: #There is not a mine in this square
+        for y in range(height):
+            for x in range(width):
+                if self.board_array[y][x].bombPresent == False: #There is not a mine in this square
                     bombCount = 0 #Start a count of each cell
                     #check left
                     if self.isValidBombCell(x-1,y+1):
@@ -101,9 +118,9 @@ class Board:
                         bombCount += 1
                     if self.isValidBombCell(x+1,y-1):
                         bombCount += 1
-                    self.board_array[x][y].numSurroundingMines = bombCount #set the board array to hold the number of bombs surrounding each cell
+                    self.board_array[y][x].numSurroundingMines = bombCount #set the board array to hold the number of bombs surrounding each cell
 
-    def isValidBombCell (self, yPos, xPos):
+    def isValidBombCell (self, xPos, yPos):
         if xPos >= self.board_width or xPos < 0:
             return False
         elif yPos >= self.board_height or yPos < 0:
