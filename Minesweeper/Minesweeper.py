@@ -25,6 +25,26 @@ class GameCell:
     def userClicked (self):
         self.visible = True
 
+    #Function that will set the Bayes probability for each cell.
+    #surMines: List of the number of bombs in each surrounding mine. 
+    #Funciton will add the number of bombs for each surrounding cell
+    def setBayesProbability (self, surMines):
+        print()
+
+    #Function that will set the number of surrounding valid cells around the current cell. 
+    #This will be the denominator in the the Bayes probability of the cell
+    def setNumValidSurroudingCells (self, width, height):
+        #If 2 conditions met, -5 valid cells. If 1 condition met, -3 valid cells 
+        twoConditionsMet = 0
+        if self.xPos - 1 < 0 or self.xPos + 1 > width:
+            twoConditionsMet += 1;
+        if self.yPos -1 < 0 or self.yPos + 1 > height:
+            twoConditionsMet += 1;
+        if twoConditionsMet == 1:
+            self.numValidSurroundingCells = 5
+        elif twoConditionsMet == 2:
+            self.numValidSurroundingCells = 3
+
 class Board:
     
 
@@ -58,6 +78,7 @@ class Board:
             new_row = []
             for x in range(width):
                 new_cell = GameCell(x, y)
+                new_cell.setNumValidSurroudingCells(self.board_width, self.board_height)
                 new_row.append(new_cell)
             self.board_array.append(new_row)
 
@@ -139,6 +160,8 @@ class UserInteraction:
 
     def __init__ (self):
         userInput = input("Welcome to Minesweeper. Would you like a small, medium, or large board?\n")
+        self.gameOver = False
+
         if userInput == "small":
             self.game_board = Board(9, 9, 10,False)
 
@@ -150,6 +173,22 @@ class UserInteraction:
 
         else:
             print("error")
+
+    def userPickCell(self):
+        x_pos = input("Enter the X (horizontal position) of the cell you would like to select")
+        y_pos = input("Enter the Y (vertical position) of the cell you would like to select")
+        print()
+
+        #Make the cell visible
+        self.game_board.board_array[int(y_pos)][int(x_pos)].visible = True
+        
+        #Check if this is a mine
+        if self.game_board.board_array[int(y_pos)][int(x_pos)].bombPresent == True:
+            self.gameOver = True
+            return
+        
+
+
         
 
 #class Screen:
@@ -179,6 +218,10 @@ class UserInteraction:
 
 #pygame.init()
 user_input = UserInteraction()
+#Main game loop
+while user_input.gameOver == False:
+    user_input.userPickCell()
+    user_input.game_board.printUserBoardText()
 #game_board = Board()
 #screen = Screen(500, 500)
 #cell = Cell()
