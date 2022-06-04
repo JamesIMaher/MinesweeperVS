@@ -2,22 +2,18 @@ from itertools import filterfalse
 import sys
 import random
 from telnetlib import SE
-import pygame
+#import pygame
 
 class GameCell:
 
-    bombPresent = False
-    xPos = 0
-    yPos = 0
-    #Number of mines in surrounding cells
-    numSurroundingMines = 0
-    #Does this show to the user?
-    visible = False
     probabilitiesMine = []
 
     def __init__ (self, xPos, yPos):
         self.xPos = xPos
         self.yPos = yPos
+        self.bombPresent = False
+        self.numSurroundingMines = 0
+        self.visible = True
 
     def setMine (self):
         self.bombPresent = True
@@ -29,38 +25,45 @@ class GameCell:
         self.visible = True
 
 class Board:
+    
 
     def __init__ (self, width, height, numMines, visible):
         self.board_width = width
         self.board_height = height
         self.numMines = numMines
-        self.board_array = self.createBoard(self.board_width, self.board_height)
+        self.board_array = []
+        self.createBoard(self.board_width, self.board_height)
+        #Initial Board Setup
+        self.placeBombs()
+        #Test print of the board
         self.printBoardText(self.board_height, self.board_height) #print the board with all zeros
-        #If the board is not visible, the program is creating the solution board. Otherwise, we are creating the user board.
-        if not visible:
-            self.placeBombs()
-            self.determineCounts(self.board_width, self.board_height)
-            self.printBoardText(self.board_height, self.board_height)
+
+
     # Function to create the back-end array that will hold whether there is a bomb or not at each square.
     # Function will evolve to contain the number of bombs in surrounding squares and a graphical representation
     
     def createBoard (self, width, height):
         #Initialize the board to zeros. -1 will represent a bomb, number will represent the number of bombs in adjactent spaces.
-        board_array = []
+        
         x = 0
         for y in range(height):
+            new_row = []
             for x in range(width):
-                new_cell = GameCell(x,y)
-                self.board_array.append(new_cell)
-        return board_array
+                new_cell = GameCell(x, y)
+                new_row.append(new_cell)
+            self.board_array.append(new_row)
 
     def printBoardText (self, width, height):
         for y in range(height):
             for x in range (width):
-                if self.board_array[y][x].bombpresent == True:
-                    print("-1\t")
-                else:
-                    print(self.board_array[y][x].numSurroundingMines + "\t")
+               #check if this cell should be shown to the user
+                if self.board_array[x][y].visible ==True:
+                    if self.board_array[x][y].bombPresent == True:
+                        print("-1\t", end='')
+                    else:
+                        #print(self.board_array[y][x].numSurroundingMines + "\t")
+                        print(self.board_array[x][y].numSurroundingMines, end='')
+                        print("\t", end='')
             print("\n")
                 #print(*self.board_array[y][x], sep="\t", end="\n")
 
@@ -69,7 +72,7 @@ class Board:
         for bomb in range(self.numMines):
             randX = random.randint(0,(self.board_width-1))
             randY = random.randint(0,(self.board_height-1))
-            self.board_array[randY][randX] = -1
+            self.board_array[randX][randY].setMine()
 
     def determineCounts (self, width, height):
         #Determine how many bombs are surrounding each square
@@ -119,39 +122,39 @@ class UserInteraction:
         userInput = input("Welcome to Minesweeper. Would you like a small, medium, or large board?\n")
         if userInput == "small":
             self.game_board = Board(9, 9, 10,False)
-            self.visible_board = Board(9, 9, 10, True)
+
         elif userInput == "medium":
             self.game_board = Board(16, 16, 40,False)
-            self.visible_board = Board(16, 16, 40,True)
+
         elif userInput == "large":
             self.game_board = Board(30, 16, 99, False)
-            self.visible_board = Board(30, 16, 99, True)
+
         else:
             print("error")
         
 
-class Screen:
+#class Screen:
 
-    def __init__ (self,width,height):
-        pygame.init()
-        self.screen = pygame.display.set_mode([width, height])
+#    def __init__ (self,width,height):
+#        pygame.init()
+#        self.screen = pygame.display.set_mode([width, height])
 
-    def initialize_screen (self):
-        self.screen.fill((255, 255, 255))
-        #pygame.draw.circle(self.screen, (0, 0, 255), (250, 250), 75)
-        pygame.display.flip()
+#    def initialize_screen (self):
+#        self.screen.fill((255, 255, 255))
+#        #pygame.draw.circle(self.screen, (0, 0, 255), (250, 250), 75)
+#        pygame.display.flip()
 
-class Cell (pygame.sprite.Sprite):
+#class Cell (pygame.sprite.Sprite):
     
-    def __init__(self):
-        super(Cell, self).__init__()
-        self.surf = pygame.Surface((75, 25))
-        self.surf.fill((0, 0, 0))
-        self.rect = self.surf.get_rect()
+#    def __init__(self):
+#        super(Cell, self).__init__()
+#        self.surf = pygame.Surface((75, 25))
+#        self.surf.fill((0, 0, 0))
+#        self.rect = self.surf.get_rect()
     
-    def draw_sprite (self, screen):
-        screen.screen.blit(self.surf, (250, 250))
-        pygame.display.flip()
+#    def draw_sprite (self, screen):
+#        screen.screen.blit(self.surf, (250, 250))
+#        pygame.display.flip()
 
 
 
