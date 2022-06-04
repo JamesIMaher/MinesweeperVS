@@ -1,4 +1,5 @@
 from itertools import filterfalse
+from re import X
 import sys
 import random
 from telnetlib import SE
@@ -35,6 +36,7 @@ class Board:
         self.createBoard(self.board_width, self.board_height)
         #Initial Board Setup
         self.placeBombs()
+        self.determineCounts(self.board_width, self.board_height)
         #Test print of the board
         self.printBoardText(self.board_height, self.board_height) #print the board with all zeros
 
@@ -78,28 +80,28 @@ class Board:
         #Determine how many bombs are surrounding each square
         for x in range(width):
             for y in range(height):
-                if self.board_array[y][x] != -1: #There is not a mine in this square
+                if self.board_array[x][y].bombPresent == False: #There is not a mine in this square
                     bombCount = 0 #Start a count of each cell
                     #check left
-                    if self.isValidBombCell(y-1,x+1):
+                    if self.isValidBombCell(x-1,y+1):
                         bombCount += 1
-                    if self.isValidBombCell(y-1,x):
+                    if self.isValidBombCell(x-1,y):
                         bombCount += 1
-                    if self.isValidBombCell(y-1,x-1):
+                    if self.isValidBombCell(x-1,y-1):
                         bombCount += 1
                     #Check top and bottom
-                    if self.isValidBombCell(y,x+1):
+                    if self.isValidBombCell(x,y+1):
                         bombCount += 1
-                    if self.isValidBombCell(y,x-1):
+                    if self.isValidBombCell(x,y-1):
                         bombCount += 1
                     #Check right
-                    if self.isValidBombCell(y+1,x+1):
+                    if self.isValidBombCell(x+1,y+1):
                         bombCount += 1
-                    if self.isValidBombCell(y+1,x):
+                    if self.isValidBombCell(x+1,y):
                         bombCount += 1
-                    if self.isValidBombCell(y+1,x-1):
+                    if self.isValidBombCell(x+1,y-1):
                         bombCount += 1
-                    self.board_array[y][x] = bombCount #set the board array to hold the number of bombs surrounding each cell
+                    self.board_array[x][y].numSurroundingMines = bombCount #set the board array to hold the number of bombs surrounding each cell
 
     def isValidBombCell (self, yPos, xPos):
         if xPos >= self.board_width or xPos < 0:
@@ -107,7 +109,7 @@ class Board:
         elif yPos >= self.board_height or yPos < 0:
             return False
         else: #Cell is valid, check for bomb
-            if self.board_array[yPos][xPos] == -1:
+            if self.board_array[yPos][xPos].bombPresent == True:
                 return True #Bomb found
             else:
                 return False #No bomb
