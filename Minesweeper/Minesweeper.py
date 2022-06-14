@@ -102,7 +102,10 @@ class Board:
         for y in range (self.board_height):
             for x in range (self.board_width):
                 if self.board_array[y][x].visible == True:
-                    print (self.board_array[y][x].numSurroundingMines, end='')
+                    if self.board_array[y][x].bombPresent == True:
+                        print ("-1", end='')
+                    else:
+                        print (self.board_array[y][x].numSurroundingMines, end='')
                     print("\t", end='')
                 else:
                     print ("X\t", end='')
@@ -175,8 +178,8 @@ class UserInteraction:
             print("error")
 
     def userPickCell(self):
-        x_pos = input("Enter the X (horizontal position) of the cell you would like to select")
-        y_pos = input("Enter the Y (vertical position) of the cell you would like to select")
+        x_pos = input("Enter the X (horizontal position) of the cell you would like to select: ")
+        y_pos = input("Enter the Y (vertical position) of the cell you would like to select: ")
         print()
 
         #Make the cell visible
