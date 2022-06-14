@@ -9,18 +9,22 @@ class GameCell:
 
     probabilitiesMine = []
 
-    def __init__ (self, xPos, yPos):
+    def __init__ (self, xPos, yPos, board_width, board_height):
         self.xPos = xPos
         self.yPos = yPos
         self.bombPresent = False
         self.numSurroundingMines = 0
         self.visible = False
+        self.board_width = board_width
+        self.board_height = board_height
 
         #Initialize the probabilities of this cell being in each state
         self.initialize_y_prob()
 
     def initialize_y_prob(self):
         self.y_probs = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7:0.0, 8:0.0} #Probability of each state. Probability will be equal until the cell is selected.
+        self.setNumValidSurroudingCells(self.board_width, self.board_height)
+        #Keep probabilities 
         for key, values in self.y_probs.items():
            self.y_probs[key] = 1/9
         
@@ -88,7 +92,7 @@ class Board:
             new_row = []
             for x in range(width):
                 new_cell = GameCell(x, y)
-                new_cell.setNumValidSurroudingCells(self.board_width, self.board_height)
+                #new_cell.setNumValidSurroudingCells(self.board_width, self.board_height)
                 new_row.append(new_cell)
             self.board_array.append(new_row)
 
