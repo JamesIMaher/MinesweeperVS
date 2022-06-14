@@ -16,6 +16,14 @@ class GameCell:
         self.numSurroundingMines = 0
         self.visible = False
 
+        #Initialize the probabilities of this cell being in each state
+        self.initialize_y_prob()
+
+    def initialize_y_prob(self):
+        self.y_probs = {0: 0.0, 1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 0.0, 6: 0.0, 7:0.0, 8:0.0} #Probability of each state. Probability will be equal until the cell is selected.
+        for key, values in self.y_probs.items():
+           self.y_probs[key] = 1/9
+        
     def setMine (self):
         self.bombPresent = True
 
@@ -44,6 +52,8 @@ class GameCell:
             self.numValidSurroundingCells = 5
         elif twoConditionsMet == 2:
             self.numValidSurroundingCells = 3
+        else:
+            self.numValidSurroundingCells = 8
 
 class Board:
     
